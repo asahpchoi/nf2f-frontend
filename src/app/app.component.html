@@ -1,0 +1,165 @@
+<h1>{{isCustomer?'Customer View': 'Agent View'}}</h1>
+<button
+  (click)="create()"
+  *ngIf="!isCustomer && !roomJoined()"
+  class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
+>
+  Creat Session
+</button>
+<button
+  (click)="clearSession()"
+  *ngIf="!isCustomer && !roomJoined()"
+  class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
+>
+  Clear Session
+</button>
+<div *ngIf="roomJoined()">
+  Session: {{onlineSession}}
+  <div *ngIf="!isCustomer" class="demo-card-wide mdl-card mdl-shadow--2dp">
+    <div class="mdl-card__title">
+      Share this to your customer
+      <a [href]="getCustomerLink()" target="_blank">{{getCustomerLink()}}</a>
+    </div>
+
+    <div class="mdl-card__title">
+      <h2 class="mdl-card__title-text">Customer Navigation Control</h2>
+    </div>
+    <div class="mdl-card__supporting-text">
+      <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="option-1">
+        <input
+          type="radio"
+          id="option-1"
+          class="mdl-radio__button"
+          name="section"
+          value="doc"
+          (click)="updateSection()"
+        />
+        <span class="mdl-radio__label">Document Upload</span>
+      </label>
+      <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="option-2">
+        <input
+          type="radio"
+          id="option-2"
+          class="mdl-radio__button"
+          name="section"
+          value="sign"
+          (click)="updateSection()"
+        />
+        <span class="mdl-radio__label">Signature</span>
+      </label>
+      <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="option-3">
+        <input
+          type="radio"
+          id="option-3"
+          class="mdl-radio__button"
+          name="section"
+          value="form"
+          (click)="updateSection()"
+        />
+        <span class="mdl-radio__label">Form Input</span>
+      </label>
+    </div>
+  </div>
+
+  <div
+    *ngIf="turnOnSection == '' && isCustomer"
+    class="demo-card-wide mdl-card mdl-shadow--2dp"
+  >
+    Your agent will guide you during the flow.
+  </div>
+
+  <div
+    *ngIf="turnOnSection == 'doc'"
+    class="demo-card-wide mdl-card mdl-shadow--2dp"
+  >
+    <div *ngIf="isCustomer ">
+      <div class="mdl-card__title">
+        <h2 class="mdl-card__title-text">Upload supporting documents</h2>
+      </div>
+      <div class="mdl-card__supporting-text">
+        <input type="file" id="fileupload" multiple /><br />
+        {{fileMessage}}
+      </div>
+      <div class="mdl-card__actions mdl-card--border">
+        <button
+          (click)="uploadDoc()"
+          class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent"
+        >
+          Upload Doc
+        </button>
+      </div>
+    </div>
+    <div *ngIf="!isCustomer ">
+      <div class="mdl-card__title">
+        <h2 class="mdl-card__title-text">File Uploaded from Customer</h2>
+      </div>
+
+      {{fileView | json}}
+    </div>
+  </div>
+
+  <div
+    *ngIf="turnOnSection =='sign'"
+    class="demo-card-wide mdl-card mdl-shadow--2dp"
+  >
+    <div>
+      <div class="mdl-card__title">
+        <h2 class="mdl-card__title-text">
+          {{isCustomer?'Sign Below': 'Customer Signature'}}
+        </h2>
+      </div>
+      <div class="mdl-card__supporting-text">
+        <div class="wrapper">
+          <signature-pad
+            [options]="signaturePadOptions"
+            (onBeginEvent)="drawStart()"
+            (onEndEvent)="drawComplete()"
+          ></signature-pad>
+          <div></div>
+        </div>
+        <div class="mdl-card__actions mdl-card--border">
+          <a
+            class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
+            (click)="clear()"
+          >
+            Clear
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="turnOnSection =='form' "
+    class="demo-card-wide mdl-card mdl-shadow--2dp"
+  >
+    <div>
+      <div class="mdl-card__title">
+        <h2 class="mdl-card__title-text">
+          Form Input
+        </h2>
+      </div>
+      <div class="mdl-card__supporting-text">
+        <div
+          class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label"
+        >
+          Name:
+          <input
+            type="text"
+            [(ngModel)]="formdata.name"
+            id="fname"
+            (keyup)="updateform()"
+          />
+          <br />
+          Phone:
+          <input
+            type="text"
+            [(ngModel)]="formdata.phone"
+            id="fphone"
+            (keyup)="updateform()"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
